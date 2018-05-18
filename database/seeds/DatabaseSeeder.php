@@ -1,5 +1,13 @@
 <?php
 
+use App\Post;
+use App\User;
+use App\Photo;
+use App\Course;
+use App\Comment;
+use App\Profile;
+use App\Favorite;
+use App\Semester;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -11,7 +19,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-       DB::statement('SET FOREIGN_KEY_CHECHKS = 0');
+       DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+       Semester::truncate();
        User::truncate();
        Profile::truncate();
        Semester::truncate();
@@ -21,6 +30,7 @@ class DatabaseSeeder extends Seeder
        Favorite::truncate();
        Photo::truncate();
 
+       $semestersQt = 10;
        $usersQt = 10;
        $coursesQt = 50;
        $profilesQt = 10;
@@ -28,11 +38,12 @@ class DatabaseSeeder extends Seeder
        $commentsQt = 15;
        $favoritesQt = 5;
 
-       factory(User::class, usersQt)->create();
-       factory(Profile::class, profilesQt)->create();
-       factory(Course::class, coursesQt)->create();
-       factory(Post::class, postsQt)->create();
-       factory(Comment::class, commentsQt)->create();
-       factory(Favorite::class, favoritesQt)->create();
+       factory(Semester::class, $semestersQt)->create();
+       factory(User::class, $usersQt)->create();
+       factory(Profile::class, $profilesQt)->create();
+       factory(Course::class, $coursesQt)->create();
+       factory(Post::class, $postsQt)->create();
+       factory(Comment::class, $commentsQt)->create();
+       factory(Favorite::class, $favoritesQt)->create();
     }
 }

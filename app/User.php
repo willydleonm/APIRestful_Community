@@ -48,7 +48,7 @@ class User extends Authenticatable
         return $this->verified == User::verified_user;
     }
 
-    public function generateToken(){
+    public static function generateToken(){
         return str_random(30);//Genera cadena de 30 caracteres de forma aleatoria
     }
 
