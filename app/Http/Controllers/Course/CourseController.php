@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Course;
 
+use App\Course;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,18 +15,10 @@ class CourseController extends Controller
      */
     public function index()
     {
-        //
+         $courses_list = Course::all();
+        return response()->json(['data' => $courses_list],200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -46,19 +39,10 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        //
+        $course = Course::findOrFail($id);
+        return response()->json(['data' => $course],200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

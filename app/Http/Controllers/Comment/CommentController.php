@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Comment;
 
+use App\Comment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,17 +15,8 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+         $comments_list = Comment::all();
+        return response()->json(['data' => $comments_list],200);
     }
 
     /**
@@ -46,18 +38,8 @@ class CommentController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $comment = Comment::findOrFail($id);
+        return response()->json(['data' => $comment],200);
     }
 
     /**

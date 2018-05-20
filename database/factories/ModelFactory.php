@@ -38,7 +38,11 @@ $factory->define(Course::class, function (Faker\Generator $faker) {
     
     return [
         'course_name' => $faker->word,
+        'code' => $faker->word,
+        'credits' => $faker->numberBetween(4,6),
         'description' => $faker->paragraph(1),
+        'required_course' => Course::all()->random()->id,
+        'required_credits' =>$faker->numberBetween(70,175),
         'semester_id' => Semester::all()->random()->id,
     ];
 });
@@ -58,8 +62,6 @@ $factory->define(Post::class, function (Faker\Generator $faker) {
     return [
         'title' => $faker->word,
         'content' => $faker->paragraph(1),
-        'created_date' => $faker->date($format = 'Y-m-d', $max = 'now'),
-        'edited_date' => $faker->date($format = 'Y-m-d', $max = 'now'),
         'viewed' => $faker->randomDigit,
         'user_id' => User::all()->random()->id,
         'course_id' => Course::all()->random()->id,

@@ -28,10 +28,10 @@ class UserController extends Controller
     public function store(Request $request)
     {
         /*Reglas de validación
-          required = campo requerido
-                unique = campo único
-                min:6 = caracteres mínimos para la password
-                confirmed = el campo debe escribirse dos veces para ser confirmado
+            required = campo requerido
+            unique = campo único
+            min:6 = caracteres mínimos para la password
+            confirmed = el campo debe escribirse dos veces para ser confirmado
         */
         $rules = [
             'username' => 'required|unique:users',
@@ -80,7 +80,42 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+         $rules = [
+            'password' => 'min:6|confirmed',
+            'is_admin' => 'in' . User::admin_user . ',' . User::regular_user
+        ];
+
+        $this->validate($request, $rules);
+
+        //Si se ingresa campo password y es diferente al que está en la tabla se modifica
+        if($request->has('password') && (Hash::check($request->password, $user->password)==false)){
+            $user->password = bcrypt($request->password);
+        }
+
+        if($request->has('first_name') && ($user->first_name != $request->first_name)){
+            $user->first_name = $request->first_name;
+        }
+
+        if($request->has('last_name')&& ($user->last_name != $request->last_name)){
+            $user->last_name = $request->last_name;
+        }
+
+        if($request->has('is_admin')){
+            if(!$user->isVerified()){
+                return response()->json(['error'=>'Sólo los usuarios verificados pueden cambiar su valor de administrador','code'=>409],409);
+            }
+            $user->is_admin = $request->is_admin;
+        }
+
+        //Si no se modificaron datos
+        if(!$user->isDirty()){
+            return response()->json(['error'=>'Se debe especificar al menos un valor diferente para actualizar','code'=>422],422);
+        }
+
+        $user->save();
+        return response()->json(['data' => $user],200);
+
     }
 
     /**

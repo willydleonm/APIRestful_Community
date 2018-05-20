@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Semester;
 
+use App\Semester;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,18 +15,10 @@ class SemesterController extends Controller
      */
     public function index()
     {
-        //
+        $semesters_list = Semester::all();
+        return response()->json(['data' => $semesters_list],200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -46,19 +39,10 @@ class SemesterController extends Controller
      */
     public function show($id)
     {
-        //
+       $semester = Semester::findOrFail($id);
+        return response()->json(['data' => $semester],200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.

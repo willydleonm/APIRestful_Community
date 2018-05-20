@@ -8,7 +8,11 @@ class Course extends Model
 {
     protected $fillable =[
     	'course_name',
+        'code',
+        'credits',
     	'description',
+        'required_course',
+        'required_credits',
     	'semester_id',
     ];
 

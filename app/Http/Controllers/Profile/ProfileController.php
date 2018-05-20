@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Profile;
 
+use App\Profile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,17 +15,8 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $profiles_list = Profile::all();
+        return response()->json(['data' => $profiles_list],200);
     }
 
     /**
@@ -35,7 +27,14 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'birth_date' => 'required',
+            'email' => 'required|email|unique:profiles'
+        ];
+        $this->validate($request, $rules);
+        $fields = $request->all();
+        $profile = Profile::create($fields);
+        return response()->json(['data'=>$profile],201);
     }
 
     /**
@@ -46,19 +45,10 @@ class ProfileController extends Controller
      */
     public function show($id)
     {
-        //
+        $profile = Profile::findOrFail($id);
+        return response()->json(['data' => $profile],200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
