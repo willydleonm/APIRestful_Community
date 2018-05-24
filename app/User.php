@@ -27,23 +27,16 @@ class User extends Authenticatable
         'password',
         'first_name',
         'last_name',
+        'birth_date',
+        'email',
+        'photo',
         'verified',//Si el usuario está verificado
         'verification_token',//Para verificar el correo electrónico del usuario
         'is_admin',//Para saber si es usuario administrador
         'semester_id',
     ];
 
-    public function setNameAttribute($value){
-        $this->attributes['first_name']=strtolower($value);
-        $this->attributes['last_name']=strtolower($value);
-        //$this->attributes['first_name','last_name']=strtolower($value);
-    }
-
-    public function getNameAttribute($value){
-        return ucwords($value);
-    }
-
-    /**
+      /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
@@ -54,6 +47,20 @@ class User extends Authenticatable
         'remember_token',//Cuando el usuario le da check para recordar sus datos al iniciar sesión
         'verification_token',
     ];
+
+    public function setNameAttribute($value){
+        $this->attributes['first_name']=strtolower($value);
+        $this->attributes['last_name']=strtolower($value);
+        //$this->attributes['first_name','last_name']=strtolower($value);
+    }
+
+    public function setEmailAttribute($value){
+        $this->attributes['email']= strtolower($value);
+    }
+    
+    public function getNameAttribute($value){
+        return ucwords($value);
+    }
 
     public function isAdmin(){
         return $this->admin == User::admin_user;

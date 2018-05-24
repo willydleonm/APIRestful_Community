@@ -5,7 +5,6 @@ use App\User;
 use App\Photo;
 use App\Course;
 use App\Comment;
-use App\Profile;
 use App\Favorite;
 use App\Semester;
 
@@ -40,21 +39,14 @@ $factory->define(User::class, function (Faker\Generator $faker) {
         'password' => $password ?: $password = bcrypt('secret'),
         'first_name' => $faker->firstName,
         'last_name' => $faker->lastName,
+        'birth_date' => $faker->date($format = 'Y-m-d', $max = 'now'),
+        'email' => $faker->unique()->safeEmail,
+        'photo' => $faker->randomElement(['1.icon_user.png','2.icon_user.png']),
         'remember_token' => str_random(10),
         'verified' => $verified = $faker->randomElement([User::verified_user, User::not_verified_user]),
         'verification_token' => $verified == User::verified_user ? null : User::generateToken(),
         'is_admin' => $faker->randomElement([User::admin_user, User::regular_user]),
         'semester_id' => Semester::all()->random()->id,
-    ];
-});
-
-$factory->define(Profile::class, function (Faker\Generator $faker) {
-    
-    return [
-        'birth_date' => $faker->date($format = 'Y-m-d', $max = 'now'),
-        'email' => $faker->unique()->safeEmail,
-        'photo' => $faker->randomElement(['1.icon_user.png','2.icon_user.png']),
-        'user_id' => User::all()->random()->id,
     ];
 });
 

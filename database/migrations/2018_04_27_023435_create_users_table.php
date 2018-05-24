@@ -20,6 +20,9 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('birth_date');
+            $table->string('email')->unique();
+            $table->string('photo');
             $table->string('verified')->default(User::not_verified_user);//Valor por defecto = usuario no verificado
             $table->string('verification_token')->nullable();//puede ser nulo ya que no todos los usuarios necesitarán verificarse
             $table->string('is_admin')->default(User::regular_user);//Por defecto será un usuario regular

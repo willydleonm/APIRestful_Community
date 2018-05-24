@@ -11,6 +11,9 @@ Route::resource('users','User\UserController', ['except' => ['create','edit']]);
 //Post Favoritos por Usuario
 Route::resource('users.favorites','User\UserFavoriteController', ['only' => ['index']]);
 
+Route::name('verify')->get('users/verify/{token}', 'User\UserController@verify');
+Route::name('resend')->get('users/{user}/resend', 'User\UserController@resend');
+
 
 /**Semester => Semestre
 **Semestre solo podrá ver directamente los semestres
@@ -22,11 +25,6 @@ Route::resource('semesters.courses','Semester\SemesterCourseController', ['only'
 * Courses => Cursos
 **/
 Route::resource('courses','Course\CourseController', ['except' => ['create','edit']]);
-
-/**
-* Profiles => Perfiles
-**/
-Route::resource('profiles','Profile\ProfileController', ['except' => ['create','edit']]);
 
 /**
 * Posts => Publicaciones

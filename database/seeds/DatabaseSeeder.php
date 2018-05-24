@@ -25,15 +25,21 @@ class DatabaseSeeder extends Seeder
        Favorite::truncate();
        Comment::truncate();
        Post::truncate();
-       Profile::truncate();
        User::truncate();
        Course::truncate();
        Semester::truncate();
 
+       User::flushEventListeners();
+       Semester::flushEventListeners();
+       Course::flushEventListeners();
+       Post::flushEventListeners();
+       Photo::flushEventListeners();
+       Comment::flushEventListeners();
+       Favorite::flushEventListeners();
+
        $semestersQt = 10;
        $coursesQt = 50;
-       $usersQt = 10;
-       $profilesQt = 10;
+       $usersQt = 10;;
        $postsQt = 5;
        $commentsQt = 7;
        $favoritesQt = 2;
@@ -42,7 +48,6 @@ class DatabaseSeeder extends Seeder
        factory(Semester::class, $semestersQt)->create();
        factory(Course::class, $coursesQt)->create();
        factory(User::class, $usersQt)->create();
-       factory(Profile::class, $profilesQt)->create();
        factory(Post::class, $postsQt)->create();
        factory(Comment::class, $commentsQt)->create();
        factory(Favorite::class, $favoritesQt)->create();
