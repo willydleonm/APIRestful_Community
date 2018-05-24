@@ -23,6 +23,7 @@ class CreatePostsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('course_id')->references('id')->on('courses');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

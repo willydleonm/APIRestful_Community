@@ -8,39 +8,44 @@ use Illuminate\Http\Request;
 * Se le va a permitir operaciones excepto crear y editar vistas solo desde este controlador
 **/
 Route::resource('users','User\UserController', ['except' => ['create','edit']]);
+//Post Favoritos por Usuario
+Route::resource('users.favorites','User\UserFavoriteController', ['only' => ['index']]);
 
 
 /**Semester => Semestre
 **Semestre solo podrá ver directamente los semestres
 **/
-Route::resource('semesters','Semester\SemesterController', ['only' => ['index','show']]);
+Route::resource('semesters','Semester\SemesterController', ['except' => ['create','edit']]);
+Route::resource('semesters.courses','Semester\SemesterCourseController', ['only' => ['index']]);
 
 /**
 * Courses => Cursos
 **/
-Route::resource('courses','Course\CourseController', ['only' => ['index','show']]);
+Route::resource('courses','Course\CourseController', ['except' => ['create','edit']]);
 
 /**
 * Profiles => Perfiles
 **/
-Route::resource('profiles','Profile\ProfileController', ['only' => ['index','show']]);
+Route::resource('profiles','Profile\ProfileController', ['except' => ['create','edit']]);
 
 /**
 * Posts => Publicaciones
 **/
-Route::resource('posts','Post\PostController', ['only' => ['index','show']]);
+Route::resource('posts','Post\PostController', ['except' => ['create','edit']]);
+//Comentarios por post
+Route::resource('posts.comments','Post\PostCommentController', ['only' => ['index']]);
 
 /**
 * Photos => Fotos
 **/
-Route::resource('photo','Photo\PhotoController', ['only' => ['index','show']]);
+Route::resource('photos','Photo\PhotoController', ['except' => ['create','edit']]);
 
 /**
 * Comments => Comentarios
 **/
-Route::resource('comments','Comment\CommentController', ['only' => ['index','show']]);
+Route::resource('comments','Comment\CommentController', ['except' => ['create','edit']]);
 
 /**
 * Favorites => Favoritos
 **/
-Route::resource('favorites','Favorite\FavoriteController', ['only' => ['index','show']]);
+Route::resource('favorites','Favorite\FavoriteController', ['except' => ['create','edit']]);

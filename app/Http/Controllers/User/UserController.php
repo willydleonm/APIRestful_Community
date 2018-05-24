@@ -4,9 +4,9 @@ namespace App\Http\Controllers\User;
 
 use App\User;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class UserController extends Controller
     public function index()
     {
         $users_list = User::all();
-        return response()->json(['data' => $users_list],200);
+        return $this->showAll($users_list);
     }
 
     /**
@@ -52,7 +52,7 @@ class UserController extends Controller
         //Asignación masiva
         $user = User::create($fields);
         //Retorno de respuesta tipo 201 que ya se realizó la operación
-        return response()->json(['data'=>$user],201);
+        return $this->showOne($user);
     }
 
     /**
@@ -61,13 +61,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        /*  Mostrar un usuario correspondiente a un $id
-            findOrFail => devuelve un error si no es encontrado el usuario Error 404
-        */
-        $user = User::findOrFail($id);
-        return response()->json(['data' => $user],200);
+        return $this->showOne($user);
     }
 
 
@@ -78,9 +74,8 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        $user = User::findOrFail($id);
          $rules = [
             'password' => 'min:6|confirmed',
             'is_admin' => 'in' . User::admin_user . ',' . User::regular_user
@@ -102,19 +97,19 @@ class UserController extends Controller
         }
 
         if($request->has('is_admin')){
-            if(!$user->isVerified()){
-                return response()->json(['error'=>'Sólo los usuarios verificados pueden cambiar su valor de administrador','code'=>409],409);
+            if($user->isVerified()==false){
+                return $this->errorResponse('Sólo los usuarios verificados pueden cambiar su valor de administrador',409);
             }
             $user->is_admin = $request->is_admin;
         }
 
         //Si no se modificaron datos
-        if(!$user->isDirty()){
-            return response()->json(['error'=>'Se debe especificar al menos un valor diferente para actualizar','code'=>422],422);
+        if($user->isClean()){
+            return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar',422);
         }
 
         $user->save();
-        return response()->json(['data' => $user],200);
+        return $this->showOne($user);
 
     }
 
@@ -124,8 +119,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return $this->showOne($user);
     }
 }

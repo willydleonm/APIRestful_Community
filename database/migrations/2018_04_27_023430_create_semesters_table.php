@@ -17,6 +17,7 @@ class CreateSemestersTable extends Migration
             $table->increments('id');
             $table->string('semester');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

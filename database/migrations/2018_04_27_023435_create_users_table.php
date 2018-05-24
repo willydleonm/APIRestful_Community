@@ -27,6 +27,7 @@ class CreateUsersTable extends Migration
             $table->foreign('semester_id')->references('id')->on('semesters');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

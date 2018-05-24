@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Profile;
 
+use App\User;
 use App\Profile;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
+use Illuminate\Support\Facades\Storage;
 
-class ProfileController extends Controller
+class ProfileController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +18,7 @@ class ProfileController extends Controller
     public function index()
     {
         $profiles_list = Profile::all();
-        return response()->json(['data' => $profiles_list],200);
+        return $this->showAll($profiles_list);
     }
 
     /**
@@ -29,12 +31,14 @@ class ProfileController extends Controller
     {
         $rules = [
             'birth_date' => 'required',
-            'email' => 'required|email|unique:profiles'
+            'email' => 'required|email|unique:profiles',
+            'photo' => 'image'
         ];
         $this->validate($request, $rules);
-        $fields = $request->all();
-        $profile = Profile::create($fields);
-        return response()->json(['data'=>$profile],201);
+        $data = $request->all();
+        $data['photo'] = $request->photo->store('');
+        $profile = Profile::create($data);
+        return $this->showOne($profile);
     }
 
     /**
@@ -43,10 +47,9 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Profile $profile)
     {
-        $profile = Profile::findOrFail($id);
-        return response()->json(['data' => $profile],200);
+        return $this->showOne($profile);
     }
 
 
@@ -57,9 +60,37 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Profile $profile)
     {
-        //
+        $user = User::findOrFail($profile->user_id);
+        $rules = [
+            'email' => 'email|unique:profiles,email,' . $user->id,
+        ];
+
+        $this->validate($request, $rules);
+        if($request->has('email')&&($profile->email != $request->email)){
+                $user->verified = User::not_verified_user;
+                $user->verification_token = User::generateToken();
+                $profile->email = $request->email;
+
+        }
+
+        if($request->has('birth_date')&&($profile->birth_date != $request->birth_date)){
+            $profile->birth_date = $request->birth_date;
+        }
+
+        if($request->hasFile('photo')){
+            Storage::delete($profile->photo);
+            $profile->photo = $request->photo->store('');
+        }
+
+        if($user->isClean()){
+            return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar',422);
+        }
+
+        $profile->save();
+        return $this->showOne($profile);
+
     }
 
     /**
@@ -68,8 +99,10 @@ class ProfileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Profile $profile)
     {
-        //
+        Storage::delete($profile->photo);
+        $profile->delete();
+        return $this->showOne($profile);
     }
 }

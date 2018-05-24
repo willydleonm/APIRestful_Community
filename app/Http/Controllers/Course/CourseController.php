@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Course;
 
 use App\Course;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class CourseController extends Controller
+class CourseController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class CourseController extends Controller
     public function index()
     {
          $courses_list = Course::all();
-        return response()->json(['data' => $courses_list],200);
+        return $this->showAll($courses_list);
     }
 
 
@@ -28,7 +28,17 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'course_name' => 'required',
+            'code' => 'required',
+            'credits' => 'required',
+            'required_course' => 'required',
+            'required_credits' => 'required',
+            'semester_id' => 'required'
+        ];
+        $this->validate($request, $rules);
+        $course = Course::create($request->all());
+        return $this->showOne($course);
     }
 
     /**
@@ -37,10 +47,9 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Course $course)
     {
-        $course = Course::findOrFail($id);
-        return response()->json(['data' => $course],200);
+        return $this->showOne($course);
     }
 
 
@@ -51,9 +60,23 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Course $course)
     {
-        //
+         $course->fill($request->intersect([
+            'course_name',
+            'code',
+            'credits',
+            'description',
+            'required_course',
+            'required_credits',
+            'semester_id',
+         ]));
+
+        if($course->isClean()){
+            return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar',422);
+        }
+        $course->save();
+        return $this->showOne($course);
     }
 
     /**
@@ -62,8 +85,9 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Course $course)
     {
-        //
+        $course->delete();
+        return $this->showOne($course);
     }
 }

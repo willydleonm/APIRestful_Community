@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Favorite;
 
 use App\Favorite;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class FavoriteController extends Controller
+class FavoriteController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class FavoriteController extends Controller
     public function index()
     {
         $favorites_list = Favorite::all();
-        return response()->json(['data' => $favorites_list],200);
+        return $this->showAll($favorites_list);
     }
 
     /**
@@ -27,7 +27,13 @@ class FavoriteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'user_id' => 'required',
+            'post_id' => 'required'
+        ];  
+        $this->validate($request, $rules);
+        $favorite = Favorite::create($request->all());
+        return $this->showOne($favorite);
     }
 
     /**
@@ -36,22 +42,9 @@ class FavoriteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Favorite $favorite)
     {
-        $favorite = Favorite::findOrFail($id);
-        return response()->json(['data' => $favorite],200);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        return $this->showOne($favorite);
     }
 
     /**
@@ -60,8 +53,9 @@ class FavoriteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Favorite $favorite)
     {
-        //
+        $favorite->delete();
+        return $this->showOne($favorite);
     }
 }

@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Post;
 
 use App\Post;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class PostController extends Controller
+class PostController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class PostController extends Controller
     public function index()
     {
         $posts_list = Post::all();
-        return response()->json(['data' => $posts_list],200);
+        return $this->showAll($posts_list);
     }
 
 
@@ -28,7 +28,13 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'title' => 'required',
+            'email' => 'required|email|unique:profiles'
+        ];
+        $this->validate($request, $rules);
+        $post = Post::create($request->all());
+        return $this->showOne($post);
     }
 
     /**
@@ -37,10 +43,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        $post = Post::findOrFail($id);
-        return response()->json(['data' => $post],200);
+        return $this->showOne($post);
     }
 
 
@@ -51,9 +56,19 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        $post->fill($request->intersect([
+            'title',
+            'content',
+        ]));
+
+        if($post->isClean()){
+            return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar',422);
+        }
+        
+        $post->save();
+        return $this->showOne($post);
     }
 
     /**
@@ -62,8 +77,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return $this->showOne($post);
     }
 }

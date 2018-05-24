@@ -3,15 +3,20 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
     const verified_user = '1';
     const not_verified_user = '0';
     const admin_user = '1';
     const regular_user = '0';
+
+
+    protected $dates = ['deleted_at'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -27,6 +32,16 @@ class User extends Authenticatable
         'is_admin',//Para saber si es usuario administrador
         'semester_id',
     ];
+
+    public function setNameAttribute($value){
+        $this->attributes['first_name']=strtolower($value);
+        $this->attributes['last_name']=strtolower($value);
+        //$this->attributes['first_name','last_name']=strtolower($value);
+    }
+
+    public function getNameAttribute($value){
+        return ucwords($value);
+    }
 
     /**
      * The attributes that should be hidden for arrays.

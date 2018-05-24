@@ -20,30 +20,33 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-       Semester::truncate();
-       User::truncate();
-       Profile::truncate();
-       Semester::truncate();
-       Course::truncate();
-       Post::truncate();
-       Comment::truncate();
-       Favorite::truncate();
+       
        Photo::truncate();
+       Favorite::truncate();
+       Comment::truncate();
+       Post::truncate();
+       Profile::truncate();
+       User::truncate();
+       Course::truncate();
+       Semester::truncate();
 
        $semestersQt = 10;
-       $usersQt = 10;
        $coursesQt = 50;
+       $usersQt = 10;
        $profilesQt = 10;
-       $postsQt = 20;
-       $commentsQt = 15;
-       $favoritesQt = 5;
+       $postsQt = 5;
+       $commentsQt = 7;
+       $favoritesQt = 2;
+       $photosQt = 3;
 
        factory(Semester::class, $semestersQt)->create();
+       factory(Course::class, $coursesQt)->create();
        factory(User::class, $usersQt)->create();
        factory(Profile::class, $profilesQt)->create();
-       factory(Course::class, $coursesQt)->create();
        factory(Post::class, $postsQt)->create();
        factory(Comment::class, $commentsQt)->create();
        factory(Favorite::class, $favoritesQt)->create();
+       factory(Photo::class, $photosQt)->create();
+       DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Semester;
 
 use App\Semester;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class SemesterController extends Controller
+class SemesterController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class SemesterController extends Controller
     public function index()
     {
         $semesters_list = Semester::all();
-        return response()->json(['data' => $semesters_list],200);
+        return $this->showAll($semesters_list);
     }
 
 
@@ -28,7 +28,12 @@ class SemesterController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'semester' => 'required',
+        ];
+        $this->validate($request, $rules);
+        $semester = Semester::create($request->all());
+        return $this->showOne($semester,201);
     }
 
     /**
@@ -37,10 +42,9 @@ class SemesterController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Semester $semester)
     {
-       $semester = Semester::findOrFail($id);
-        return response()->json(['data' => $semester],200);
+        return $this->showOne($semester);
     }
 
 
@@ -51,9 +55,18 @@ class SemesterController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Semester $semester)
     {
-        //
+        $semester->fill($request->intersect([
+            'semester',
+        ]));
+
+        if($semester->isClean()){
+            return response()->json(['error'=>'Se debe especificar al menos un valor diferente para actualizar','code'=>422],422);
+        }
+
+        $semester->save();
+        return $this->showOne($semester);
     }
 
     /**
@@ -62,8 +75,9 @@ class SemesterController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Semester $semester)
     {
-        //
+        $semester->delete();
+        return $this->showOne($semester);
     }
 }

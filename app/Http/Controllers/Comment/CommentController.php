@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Comment;
 
 use App\Comment;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 
-class CommentController extends Controller
+class CommentController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class CommentController extends Controller
     public function index()
     {
          $comments_list = Comment::all();
-        return response()->json(['data' => $comments_list],200);
+        return $this->showAll($comments_list);
     }
 
     /**
@@ -27,7 +27,15 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'content' => 'required|min:1',
+            'date'=> 'required',
+            'post_id' => 'required',
+            'user_id'=> 'required',
+        ];
+        $this->validate($request, $rules);
+        $comment = Comment::create($request->all());
+        return $this->showOne($comment);
     }
 
     /**
@@ -36,10 +44,9 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Comment $comment)
     {
-        $comment = Comment::findOrFail($id);
-        return response()->json(['data' => $comment],200);
+        return $this->showOne($comment);
     }
 
     /**
@@ -49,9 +56,18 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Comment $comment)
     {
-        //
+        $comment->fill($request->intersect([
+            'content',
+        ]));
+        //Si no se modificaron datos
+        if($comment->isClean()){
+            return $this->errorResponse('Se debe especificar al menos un valor diferente para actualizar',422);
+        }
+
+        $comment->save();
+        return $this->showOne($comment);
     }
 
     /**
@@ -60,8 +76,9 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Comment $comment)
     {
-        //
+        $comment->delete();
+        return $this->showOne($comment);
     }
 }
